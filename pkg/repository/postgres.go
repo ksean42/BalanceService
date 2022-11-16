@@ -63,9 +63,58 @@ func (p *PostgresClient) Reserve(req *entities.Request) error {
 		}
 		return err
 	}
-
-	_, err = tx.Exec("INSERT INTO reserve_account( service_id, user_id, order_id, amount) "+
+	var exist bool
+	if err := p.QueryRow("select exists(select * from history where order_id=$1)", req.OrderID).Scan(&exist); err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+	if exist {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return fmt.Errorf("order already exist")
+	}
+	_, err = tx.Exec("INSERT INTO reserve_account(service_id, user_id, order_id, amount) "+
 		"VALUES($1, $2, $3, $4) ", req.ServiceID, req.Id, req.OrderID, req.Amount)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return fmt.Errorf("order already exist")
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *PostgresClient) Approve(req *entities.Request) error {
+	tx, err := p.Begin()
+	if err != nil {
+		return err
+	}
+	var reservedAmount float64
+	err = tx.QueryRow("SELECT amount FROM reserve_account"+
+		" WHERE order_id = $1 and service_id = $2 and user_id = $3", req.OrderID, req.ServiceID, req.Id).Scan(&reservedAmount)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("not found")
+		}
+		return err
+	}
+	if reservedAmount != req.Amount {
+		return fmt.Errorf("amount is incorrect")
+	}
+
+	_, err = tx.Exec("DELETE FROM reserve_account "+
+		"WHERE order_id = $1", req.OrderID)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return rollbackErr
@@ -74,8 +123,7 @@ func (p *PostgresClient) Reserve(req *entities.Request) error {
 	}
 
 	_, err = tx.Exec("INSERT INTO history(order_id, service_id, user_id, amount, date) "+
-		"VALUES($1, $2, $3, $4,$5) "+
-		"ON CONFLICT (order_id) DO UPDATE SET amount = (history.amount + EXCLUDED.amount)", req.OrderID, req.ServiceID, req.Id, req.Amount, time.Now())
+		"VALUES($1, $2, $3, $4,$5) ", req.OrderID, req.ServiceID, req.Id, req.Amount, time.Now())
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return rollbackErr
@@ -87,9 +135,5 @@ func (p *PostgresClient) Reserve(req *entities.Request) error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (p *PostgresClient) Approve(req *entities.Request) error {
 	return nil
 }

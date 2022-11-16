@@ -20,7 +20,7 @@ func (h *Handler) GetBalance(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		log.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{"Bad request"})
 		return
 	}
 	balance, err := h.Balance.GetBalance(id)
@@ -37,7 +37,7 @@ func (h *Handler) Add(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{"Bad request"})
 		return
 	}
 	err = h.Balance.Add(req.Id, req.Amount)
@@ -65,5 +65,18 @@ func (h *Handler) Reserve(c *gin.Context) {
 	c.JSON(http.StatusOK, ResultResponse{"OK"})
 }
 func (h *Handler) Approve(c *gin.Context) {
-
+	req := &entities.Request{}
+	err := c.ShouldBindJSON(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		return
+	}
+	err = h.Balance.Approve(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, ResultResponse{"OK"})
 }
