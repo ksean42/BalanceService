@@ -7,4 +7,5 @@ type Balance interface {
 	GetBalance(id int) (float64, error)
 	Reserve(req *entities.Request) error
 	Approve(req *entities.Request) error
+	GetReport(date string) (string, error)
 }

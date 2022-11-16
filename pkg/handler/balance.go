@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type ErrorResponse struct {
@@ -79,4 +80,23 @@ func (h *Handler) Approve(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, ResultResponse{"OK"})
+}
+
+func (h *Handler) GetReport(c *gin.Context) {
+	var req struct {
+		Date string
+	}
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		return
+	}
+	t, err := time.Parse("2006-01", req.Date)
+	if err != nil {
+		log.Println(err)
+	}
+	fileLink, err := h.Balance.GetReport(t.Format("2006-01-02"))
+	c.JSON(http.StatusOK, ResultResponse{Result: fileLink})
 }

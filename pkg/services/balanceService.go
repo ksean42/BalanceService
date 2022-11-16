@@ -4,6 +4,9 @@ import (
 	"avito_test_task/pkg/entities"
 	"avito_test_task/pkg/repository"
 	"fmt"
+	"github.com/gocarina/gocsv"
+	"log"
+	"os"
 )
 
 type BalanceService struct {
@@ -43,4 +46,46 @@ func (b *BalanceService) Reserve(req *entities.Request) error {
 
 func (b *BalanceService) Approve(req *entities.Request) error {
 	return b.repo.Approve(req)
+}
+func (b *BalanceService) GetReport(date string) (string, error) {
+	report, err := b.repo.GetReport(date)
+	if err != nil {
+		return "", err
+	}
+	path, err := writeCSV(report, date)
+	if err != nil {
+		return "", err
+	}
+	log.Println(path)
+	return path, err
+}
+
+func writeCSV(report *[]entities.Report, date string) (string, error) {
+	filePath := fmt.Sprintf("reports/revenue_report_%s.csv", date)
+	_, err := os.Stat("reports")
+	if err != nil {
+		err := os.Mkdir("reports", os.ModePerm)
+		if err != nil {
+			log.Println(err)
+			return "", err
+		}
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	defer file.Close()
+
+	if err := gocsv.MarshalFile(report, file); err != nil {
+		log.Println(err)
+		return "", err
+	}
+	curPath, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return curPath + "/" + filePath, nil
 }

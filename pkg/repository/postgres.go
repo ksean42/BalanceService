@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"log"
 	"time"
 )
 
@@ -136,4 +137,27 @@ func (p *PostgresClient) Approve(req *entities.Request) error {
 		return err
 	}
 	return nil
+}
+
+func (p *PostgresClient) GetReport(date string) (*[]entities.Report, error) {
+	res, err := p.Query(fmt.Sprintf("SELECT service_id, sum(amount)"+
+		" from history "+
+		"where date_trunc('month',date) = date_trunc('month', timestamp '%s') "+
+		"GROUP BY service_id", date))
+	if err != nil {
+		log.Println("query", err)
+		return nil, err
+	}
+	defer res.Close()
+	var report []entities.Report
+	row := entities.Report{}
+	for res.Next() {
+		er := res.Scan(&row.ServiceID, &row.Revenue)
+		if er != nil {
+			log.Println(er)
+			return nil, er
+		}
+		report = append(report, row)
+	}
+	return &report, nil
 }
