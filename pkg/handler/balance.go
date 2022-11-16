@@ -88,7 +88,6 @@ func (h *Handler) GetReport(c *gin.Context) {
 	}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-
 		log.Println(err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
 		return
@@ -96,7 +95,14 @@ func (h *Handler) GetReport(c *gin.Context) {
 	t, err := time.Parse("2006-01", req.Date)
 	if err != nil {
 		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		return
 	}
-	fileLink, err := h.Balance.GetReport(t.Format("2006-01-02"))
+	fileLink, err := h.Balance.GetReport(t)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, ResultResponse{Result: fileLink})
 }

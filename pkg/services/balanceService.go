@@ -7,6 +7,8 @@ import (
 	"github.com/gocarina/gocsv"
 	"log"
 	"os"
+	"path/filepath"
+	"time"
 )
 
 type BalanceService struct {
@@ -47,7 +49,7 @@ func (b *BalanceService) Reserve(req *entities.Request) error {
 func (b *BalanceService) Approve(req *entities.Request) error {
 	return b.repo.Approve(req)
 }
-func (b *BalanceService) GetReport(date string) (string, error) {
+func (b *BalanceService) GetReport(date time.Time) (string, error) {
 	report, err := b.repo.GetReport(date)
 	if err != nil {
 		return "", err
@@ -56,12 +58,12 @@ func (b *BalanceService) GetReport(date string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Println(path)
 	return path, err
 }
 
-func writeCSV(report *[]entities.Report, date string) (string, error) {
-	filePath := fmt.Sprintf("reports/revenue_report_%s.csv", date)
+func writeCSV(report *[]entities.Report, t time.Time) (string, error) {
+	date := t.Format("2006-01-02")
+	path := fmt.Sprintf("reports/revenue_report_%s.csv", date)
 	_, err := os.Stat("reports")
 	if err != nil {
 		err := os.Mkdir("reports", os.ModePerm)
@@ -71,7 +73,7 @@ func writeCSV(report *[]entities.Report, date string) (string, error) {
 		}
 	}
 
-	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -87,5 +89,6 @@ func writeCSV(report *[]entities.Report, date string) (string, error) {
 		log.Println(err)
 		return "", err
 	}
-	return curPath + "/" + filePath, nil
+
+	return filepath.Join(curPath, path), nil
 }

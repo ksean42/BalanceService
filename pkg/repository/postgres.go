@@ -65,6 +65,7 @@ func (p *PostgresClient) Reserve(req *entities.Request) error {
 		return err
 	}
 	var exist bool
+
 	if err := p.QueryRow("select exists(select * from history where order_id=$1)", req.OrderID).Scan(&exist); err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return rollbackErr
@@ -139,11 +140,14 @@ func (p *PostgresClient) Approve(req *entities.Request) error {
 	return nil
 }
 
-func (p *PostgresClient) GetReport(date string) (*[]entities.Report, error) {
-	res, err := p.Query(fmt.Sprintf("SELECT service_id, sum(amount)"+
-		" from history "+
-		"where date_trunc('month',date) = date_trunc('month', timestamp '%s') "+
-		"GROUP BY service_id", date))
+func (p *PostgresClient) GetReport(date time.Time) (*[]entities.Report, error) {
+	month := date.Format("2006-01-02")
+	nextMonth := date.AddDate(0, 1, -1).Format("2006-01-02")
+
+	res, err := p.Query("SELECT service_id, sum(amount) "+
+		"FROM history "+
+		"WHERE date BETWEEN $1 AND $2 "+
+		"GROUP BY service_id", month, nextMonth)
 	if err != nil {
 		log.Println("query", err)
 		return nil, err
