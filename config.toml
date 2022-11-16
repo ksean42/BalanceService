@@ -1,5 +1,5 @@
-port = "8011"
-db_host = "localhost"
+port = "8071"
+db_host = "db"
 db_name = "postgres"
 db_port = "5432"
 db_user = "postgres"

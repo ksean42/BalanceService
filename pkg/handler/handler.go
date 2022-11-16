@@ -16,8 +16,8 @@ func NewHandler(service *services.BalanceService) *Handler {
 func (h *Handler) InitRouter() *gin.Engine {
 	router := gin.Default()
 	api := router.Group("/api")
-	api.POST("/add", h.Add)
 	api.GET("/get/:id", h.GetBalance)
+	api.POST("/add", h.Add)
 	api.POST("/reserve", h.Reserve)
 	api.POST("/approve", h.Approve)
 	return router
