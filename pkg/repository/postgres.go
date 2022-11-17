@@ -163,5 +163,8 @@ func (p *PostgresClient) GetReport(date time.Time) (*[]entities.Report, error) {
 		}
 		report = append(report, row)
 	}
+	if len(report) == 0 {
+		return nil, fmt.Errorf("there is no data for this date")
+	}
 	return &report, nil
 }
