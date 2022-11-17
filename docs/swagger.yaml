@@ -31,6 +31,15 @@ definitions:
     properties:
       result: {}
     type: object
+  entities.TransferRequest:
+    properties:
+      amount:
+        type: number
+      dest_id:
+        type: integer
+      src_id:
+        type: integer
+    type: object
   entities.UserBalanceRequest:
     properties:
       ID:
@@ -187,6 +196,35 @@ paths:
           schema:
             $ref: '#/definitions/entities.ErrorResponse'
       summary: Reserve funds on user account
+      tags:
+      - user balance
+  /api/transfer:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: src user id,dest user id, amount to transfer money
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.TransferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Create transfer between users
       tags:
       - user balance
 swagger: "2.0"

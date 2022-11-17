@@ -240,6 +240,51 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/transfer": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user balance"
+                ],
+                "summary": "Create transfer between users",
+                "parameters": [
+                    {
+                        "description": "src user id,dest user id, amount to transfer money",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.TransferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ResultResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -291,6 +336,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "result": {}
+            }
+        },
+        "entities.TransferRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "dest_id": {
+                    "type": "integer"
+                },
+                "src_id": {
+                    "type": "integer"
+                }
             }
         },
         "entities.UserBalanceRequest": {

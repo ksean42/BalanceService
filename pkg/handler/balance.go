@@ -138,3 +138,28 @@ func (h *Handler) GetReport(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, entities.ResultResponse{Result: fileLink})
 }
+
+// @Summary Create transfer between users
+// @Tags user balance
+// @Accept json
+// @Produce json
+// @Param input body entities.TransferRequest true "src user id,dest user id, amount to transfer money"
+// @Success 200 {object} entities.ResultResponse
+// @Failure 400,404 {object} entities.ErrorResponse
+// @Router /api/transfer [post]
+func (h *Handler) Transfer(c *gin.Context) {
+	req := &entities.TransferRequest{}
+	err := c.ShouldBindJSON(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+	err = h.Balance.Transfer(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, entities.ResultResponse{Result: "OK"})
+}

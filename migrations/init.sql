@@ -35,6 +35,18 @@ CREATE TABLE IF NOT EXISTS history (
 	CONSTRAINT FK_history_user_id FOREIGN KEY(user_id) REFERENCES balance(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_history (
+    transaction_id serial,
+    user_src int NOT NULL ,
+    user_dest int NOT NULL,
+    amount decimal(19,2) NOT NULL,
+    date timestamp not null,
+    CONSTRAINT PK_user_transaction_id PRIMARY KEY(transaction_id),
+    CONSTRAINT FK_user_history_user_src FOREIGN KEY(user_src) REFERENCES balance(user_id),
+    CONSTRAINT FK_user_history_user_dest FOREIGN KEY(user_dest) REFERENCES balance(user_id)
+);
+
 
 CREATE INDEX idx_history_date ON history(date);
 CREATE INDEX idx_reserve_order_id ON reserve_account(order_id);
+CREATE INDEX idx_user_src ON user_history(user_src)

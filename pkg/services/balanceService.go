@@ -39,7 +39,7 @@ func (b *BalanceService) Reserve(req *entities.Request) error {
 		return err
 	}
 	if (balance - req.Amount) < 0 {
-		return fmt.Errorf("not enough funds")
+		return fmt.Errorf("insufficient funds")
 	} else if req.Amount <= 0 {
 		return fmt.Errorf("amount is incorrect")
 	} else if req.ServiceID <= 0 {
@@ -105,4 +105,19 @@ func writeCSV(report *[]entities.Report, t time.Time) (string, error) {
 	}
 
 	return filepath.Join(curPath, path), nil
+}
+
+func (b *BalanceService) Transfer(req *entities.TransferRequest) error {
+	if req.Amount <= 0 || req.SrcID <= 0 || req.DestID <= 0 {
+		return fmt.Errorf("invalid request, id and amount cant be less of equal than zero")
+	}
+
+	srcBalance, err := b.GetBalance(req.SrcID)
+	if err != nil {
+		return err
+	}
+	if (srcBalance - req.Amount) < 0 {
+		return fmt.Errorf("insufficient funds")
+	}
+	return b.repo.Transfer(req)
 }

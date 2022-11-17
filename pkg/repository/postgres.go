@@ -168,3 +168,45 @@ func (p *PostgresClient) GetReport(date time.Time) (*[]entities.Report, error) {
 	}
 	return &report, nil
 }
+
+func (p *PostgresClient) Transfer(req *entities.TransferRequest) error {
+	tx, err := p.Begin()
+	if err != nil {
+		return err
+	}
+	subQuery := "UPDATE balance SET balance = balance + $1 " +
+		"WHERE user_id = $2;"
+	_, err = tx.Exec(subQuery, req.Amount, req.SrcID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+
+	addQuery := "UPDATE balance SET balance = balance + $1 " +
+		"WHERE user_id = $2;"
+	_, err = tx.Exec(addQuery, req.Amount, req.DestID)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+
+	transactionQuery := "INSERT INTO user_history(user_src, user_dest, amount, date) " +
+		"VALUES($1, $2, $3, $4)"
+	_, err = tx.Exec(transactionQuery, req.SrcID, req.DestID, req.Amount, time.Now())
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}

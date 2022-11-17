@@ -16,6 +16,12 @@ type Request struct {
 	Amount    float64 `json:"amount"`
 }
 
+type TransferRequest struct {
+	SrcID  int     `json:"src_id"`
+	DestID int     `json:"dest_id"`
+	Amount float64 `json:"amount"`
+}
+
 type ReportRequest struct {
 	Date string `json:"date"`
 }

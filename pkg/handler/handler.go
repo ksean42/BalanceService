@@ -26,6 +26,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 		api.POST("/add", h.Add)
 		api.POST("/reserve", h.Reserve)
 		api.POST("/approve", h.Approve)
+		api.POST("/transfer", h.Transfer)
 	}
 	return router
 }
