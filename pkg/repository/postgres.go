@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"avito_test_task/pkg"
-	"avito_test_task/pkg/entities"
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/ksean42/BalanceService/pkg"
+	"github.com/ksean42/BalanceService/pkg/entities"
 	_ "github.com/lib/pq"
 	"log"
 	"time"
@@ -78,13 +78,13 @@ func (p *PostgresClient) Reserve(req *entities.Request) error {
 		}
 		return fmt.Errorf("order already exist")
 	}
-	_, err = tx.Exec("INSERT INTO reserve_account(service_id, user_id, order_id, amount) "+
-		"VALUES($1, $2, $3, $4) ", req.ServiceID, req.Id, req.OrderID, req.Amount)
+	_, err = tx.Exec("INSERT INTO reserve_account(order_id, service_id, user_id, amount) "+
+		"VALUES($1, $2, $3, $4) ", req.OrderID, req.ServiceID, req.Id, req.Amount)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return rollbackErr
 		}
-		return fmt.Errorf("order already exist")
+		return err
 	}
 
 	err = tx.Commit()

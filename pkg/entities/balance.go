@@ -1,8 +1,12 @@
 package entities
 
-type UserBalance struct {
-	Id      int     `json:"ID"`
-	Balance float64 `json:"balance"`
+type UserBalanceRequest struct {
+	Id int `json:"ID"`
+}
+
+type AddRequest struct {
+	Id     int     `json:"ID"`
+	Amount float64 `json:"amount"`
 }
 
 type Request struct {
@@ -10,4 +14,16 @@ type Request struct {
 	ServiceID int     `json:"service_ID"`
 	OrderID   int     `json:"order_ID"`
 	Amount    float64 `json:"amount"`
+}
+
+type ReportRequest struct {
+	Date string `json:"date"`
+}
+
+type ErrorResponse struct {
+	Error string
+}
+
+type ResultResponse struct {
+	Result interface{}
 }

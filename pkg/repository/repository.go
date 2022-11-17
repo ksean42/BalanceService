@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"avito_test_task/pkg/entities"
+	"github.com/ksean42/BalanceService/pkg/entities"
 	"time"
 )
 

@@ -1,0 +1,192 @@
+definitions:
+  entities.AddRequest:
+    properties:
+      ID:
+        type: integer
+      amount:
+        type: number
+    type: object
+  entities.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  entities.ReportRequest:
+    properties:
+      date:
+        type: string
+    type: object
+  entities.Request:
+    properties:
+      amount:
+        type: number
+      id:
+        type: integer
+      order_ID:
+        type: integer
+      service_ID:
+        type: integer
+    type: object
+  entities.ResultResponse:
+    properties:
+      result: {}
+    type: object
+  entities.UserBalanceRequest:
+    properties:
+      ID:
+        type: integer
+    type: object
+host: localhost:8071
+info:
+  contact: {}
+  description: API service to manage user balance, payments and get revenue reports
+  title: Balance Service API
+  version: "1.0"
+paths:
+  /api/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id and amount
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AddRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Add amount to user account
+      tags:
+      - user balance
+  /api/approve:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id,order_id, service_id to reserve funds for approve payment
+          service
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Approve payment transaction
+      tags:
+      - user balance
+  /api/get:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id for its balance
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UserBalanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Get user balance
+      tags:
+      - user balance
+  /api/report:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 'Month for report. Format: 2022-11'
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ReportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Create and get path to csv file with report
+      tags:
+      - report
+  /api/reserve:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id,order_id, service_id to reserve funds for service
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Reserve funds on user account
+      tags:
+      - user balance
+swagger: "2.0"

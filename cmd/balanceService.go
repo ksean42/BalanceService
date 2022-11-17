@@ -1,18 +1,22 @@
 package main
 
 import (
-	"avito_test_task/pkg"
-	"avito_test_task/pkg/handler"
-	"avito_test_task/pkg/repository"
-	"avito_test_task/pkg/server"
-	"avito_test_task/pkg/services"
 	"context"
+	"github.com/ksean42/BalanceService/pkg"
+	"github.com/ksean42/BalanceService/pkg/handler"
+	"github.com/ksean42/BalanceService/pkg/repository"
+	"github.com/ksean42/BalanceService/pkg/server"
+	"github.com/ksean42/BalanceService/pkg/services"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
+// @title Balance Service API
+// @version 1.0
+// @description API service to manage user balance, payments and get revenue reports
+// @host localhost:8071
 func main() {
 
 	cfg := pkg.NewConfig()
