@@ -12,4 +12,5 @@ type Balance interface {
 	Approve(req *entities.Request) error
 	GetReport(date time.Time) (string, error)
 	Transfer(req *entities.TransferRequest) error
+	Reject(req *entities.ReserveReject) error
 }

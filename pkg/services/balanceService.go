@@ -121,3 +121,14 @@ func (b *BalanceService) Transfer(req *entities.TransferRequest) error {
 	}
 	return b.repo.Transfer(req)
 }
+
+func (b *BalanceService) Reject(req *entities.ReserveReject) error {
+	if req.Id <= 0 {
+		return fmt.Errorf("id is incorrect")
+	}
+	_, err := b.GetBalance(req.Id)
+	if err != nil {
+		return err
+	}
+	return b.repo.Reject(req)
+}

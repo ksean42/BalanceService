@@ -22,6 +22,11 @@ type TransferRequest struct {
 	Amount float64 `json:"amount"`
 }
 
+type ReserveReject struct {
+	Id      int `json:"id"`
+	OrderId int `json:"order_id"`
+}
+
 type ReportRequest struct {
 	Date string `json:"date"`
 }

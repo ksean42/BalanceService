@@ -163,3 +163,28 @@ func (h *Handler) Transfer(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, entities.ResultResponse{Result: "OK"})
 }
+
+// @Summary Reject reserving and refund money
+// @Tags user balance
+// @Accept json
+// @Produce json
+// @Param input body entities.ReserveReject true "user id and order id for reject the reservation"
+// @Success 200 {object} entities.ResultResponse
+// @Failure 400,404 {object} entities.ErrorResponse
+// @Router /api/reject [post]
+func (h *Handler) Reject(c *gin.Context) {
+	req := &entities.ReserveReject{}
+	err := c.ShouldBindJSON(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+	err = h.Balance.Reject(req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, entities.ResultResponse{Result: "OK"})
+}

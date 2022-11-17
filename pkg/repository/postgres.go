@@ -210,3 +210,43 @@ func (p *PostgresClient) Transfer(req *entities.TransferRequest) error {
 	}
 	return nil
 }
+
+func (p *PostgresClient) Reject(req *entities.ReserveReject) error {
+	var amount float64
+	if err := p.QueryRow("SELECT amount FROM reserve_account "+
+		"WHERE user_id = $1 and order_id = $2", req.Id, req.OrderId).Scan(&amount); err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("reserving is not found")
+		}
+		return err
+	}
+	tx, err := p.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM reserve_account "+
+		"WHERE order_id = $1 and user_id = $2", req.OrderId, req.Id)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+
+	addQuery := "UPDATE balance SET balance = balance + $1 " +
+		"WHERE user_id = $2;"
+	_, err = tx.Exec(addQuery, amount, req.Id)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return rollbackErr
+		}
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}

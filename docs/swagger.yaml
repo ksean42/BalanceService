@@ -27,6 +27,13 @@ definitions:
       service_ID:
         type: integer
     type: object
+  entities.ReserveReject:
+    properties:
+      id:
+        type: integer
+      order_id:
+        type: integer
+    type: object
   entities.ResultResponse:
     properties:
       result: {}
@@ -138,6 +145,35 @@ paths:
           schema:
             $ref: '#/definitions/entities.ErrorResponse'
       summary: Get user balance
+      tags:
+      - user balance
+  /api/reject:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id and order id for reject the reservation
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ReserveReject'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Reject reserving and refund money
       tags:
       - user balance
   /api/report:

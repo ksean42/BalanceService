@@ -12,4 +12,5 @@ type Repository interface {
 	Approve(req *entities.Request) error
 	GetReport(date time.Time) (*[]entities.Report, error)
 	Transfer(req *entities.TransferRequest) error
+	Reject(req *entities.ReserveReject) error
 }

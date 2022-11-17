@@ -151,6 +151,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/reject": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user balance"
+                ],
+                "summary": "Reject reserving and refund money",
+                "parameters": [
+                    {
+                        "description": "user id and order id for reject the reservation",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.ReserveReject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ResultResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/report": {
             "get": {
                 "consumes": [
@@ -328,6 +373,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "service_ID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.ReserveReject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order_id": {
                     "type": "integer"
                 }
             }
