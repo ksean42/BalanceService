@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// @Summary Get user balance
+// @Summary balance user balance
 // @Tags user balance
 // @Accept json
 // @Produce json
@@ -187,4 +187,30 @@ func (h *Handler) Reject(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, entities.ResultResponse{Result: "OK"})
+}
+
+// @Summary Get user transactions/transfers/reserver report
+// @Tags report
+// @Accept json
+// @Produce json
+// @Param input body entities.ReportRequest true "User id for report"
+// @Success 200 {object} entities.ResultResponse
+// @Failure 400,404 {object} entities.ErrorResponse
+// @Router /api/userReport [get]
+func (h *Handler) GetUserReport(c *gin.Context) {
+	req := &entities.UserReportRequest{}
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	result, err := h.Balance.GetUserReport(req.Id)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, entities.ResultResponse{Result: result})
 }

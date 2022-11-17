@@ -1,18 +1,18 @@
 package entities
 
 type UserBalanceRequest struct {
-	Id int `json:"ID"`
+	Id int `json:"id"`
 }
 
 type AddRequest struct {
-	Id     int     `json:"ID"`
+	Id     int     `json:"id"`
 	Amount float64 `json:"amount"`
 }
 
 type Request struct {
 	Id        int     `json:"id"`
-	ServiceID int     `json:"service_ID"`
-	OrderID   int     `json:"order_ID"`
+	ServiceID int     `json:"service_id"`
+	OrderID   int     `json:"order_id"`
 	Amount    float64 `json:"amount"`
 }
 
@@ -25,10 +25,6 @@ type TransferRequest struct {
 type ReserveReject struct {
 	Id      int `json:"id"`
 	OrderId int `json:"order_id"`
-}
-
-type ReportRequest struct {
-	Date string `json:"date"`
 }
 
 type ErrorResponse struct {

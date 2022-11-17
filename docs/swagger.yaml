@@ -1,10 +1,10 @@
 definitions:
   entities.AddRequest:
     properties:
-      ID:
-        type: integer
       amount:
         type: number
+      id:
+        type: integer
     type: object
   entities.ErrorResponse:
     properties:
@@ -22,9 +22,9 @@ definitions:
         type: number
       id:
         type: integer
-      order_ID:
+      order_id:
         type: integer
-      service_ID:
+      service_id:
         type: integer
     type: object
   entities.ReserveReject:
@@ -49,7 +49,7 @@ definitions:
     type: object
   entities.UserBalanceRequest:
     properties:
-      ID:
+      id:
         type: integer
     type: object
 host: localhost:8071
@@ -144,7 +144,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/entities.ErrorResponse'
-      summary: Get user balance
+      summary: balance user balance
       tags:
       - user balance
   /api/reject:
@@ -263,4 +263,33 @@ paths:
       summary: Create transfer between users
       tags:
       - user balance
+  /api/userReport:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User id for report
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ReportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Get user transactions/transfers/reserver report
+      tags:
+      - report
 swagger: "2.0"

@@ -117,7 +117,7 @@ const docTemplate = `{
                 "tags": [
                     "user balance"
                 ],
-                "summary": "Get user balance",
+                "summary": "balance user balance",
                 "parameters": [
                     {
                         "description": "user id for its balance",
@@ -330,17 +330,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/userReport": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "report"
+                ],
+                "summary": "Get user transactions/transfers/reserver report",
+                "parameters": [
+                    {
+                        "description": "User id for report",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.ReportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ResultResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "entities.AddRequest": {
             "type": "object",
             "properties": {
-                "ID": {
-                    "type": "integer"
-                },
                 "amount": {
                     "type": "number"
+                },
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -369,10 +414,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "order_ID": {
+                "order_id": {
                     "type": "integer"
                 },
-                "service_ID": {
+                "service_id": {
                     "type": "integer"
                 }
             }
@@ -411,7 +456,7 @@ const docTemplate = `{
         "entities.UserBalanceRequest": {
             "type": "object",
             "properties": {
-                "ID": {
+                "id": {
                     "type": "integer"
                 }
             }

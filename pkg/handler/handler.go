@@ -21,8 +21,9 @@ func (h *Handler) InitRouter() *gin.Engine {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api")
 	{
-		api.GET("/get", h.GetBalance)
+		api.GET("/balance", h.GetBalance)
 		api.GET("/report", h.GetReport)
+		api.GET("/userReport", h.GetUserReport)
 		api.POST("/add", h.Add)
 		api.POST("/reserve", h.Reserve)
 		api.POST("/approve", h.Approve)

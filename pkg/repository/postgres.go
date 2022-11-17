@@ -250,3 +250,72 @@ func (p *PostgresClient) Reject(req *entities.ReserveReject) error {
 	}
 	return nil
 }
+
+func (p *PostgresClient) GetUserReport(id int) (*entities.UserReport, error) {
+	// Transactions
+	transactionsRes, err := p.Query("SELECT service_id, order_id, amount, date "+
+		"FROM history "+
+		"WHERE user_id = $1 "+
+		"ORDER BY date", id)
+	if err != nil {
+		return nil, err
+	}
+	defer transactionsRes.Close()
+	var transactionReport []entities.UserTransactionReport
+	transaction := entities.UserTransactionReport{}
+	for transactionsRes.Next() {
+		er := transactionsRes.Scan(&transaction.ServiceID, &transaction.OrderID, &transaction.Amount, &transaction.Date)
+		if er != nil {
+			return nil, er
+		}
+		transactionReport = append(transactionReport, transaction)
+	}
+	// Transfers
+	transferRes, err := p.Query("SELECT user_src, user_dest, amount, date "+
+		"FROM user_history "+
+		"WHERE user_src = $1 or user_dest = $1 "+
+		"ORDER BY date", id)
+	if err != nil {
+		return nil, err
+	}
+	defer transferRes.Close()
+	var transferReport []entities.UserTransferReport
+	transfer := entities.UserTransferReport{}
+	for transferRes.Next() {
+		er := transferRes.Scan(&transfer.SrcID, &transfer.DestID, &transfer.Amount, &transfer.Date)
+		if er != nil {
+			return nil, er
+		}
+		transferReport = append(transferReport, transfer)
+	}
+	// Reservings
+	reserveRes, err := p.Query("SELECT order_id, service_id, amount "+
+		"FROM reserve_account "+
+		"WHERE user_id = $1 "+
+		"ORDER BY amount", id)
+	if err != nil {
+		return nil, err
+	}
+	defer reserveRes.Close()
+	var reservingReport []entities.UserReserving
+	reserving := entities.UserReserving{}
+	for reserveRes.Next() {
+		er := reserveRes.Scan(&reserving.OrderID, &reserving.ServiceID, &reserving.Amount)
+		if er != nil {
+			return nil, er
+		}
+		reservingReport = append(reservingReport, reserving)
+	}
+
+	report := &entities.UserReport{
+		Transfers:    transferReport,
+		Transactions: transactionReport,
+		Reserves:     reservingReport,
+	}
+	if len(report.Transactions) == 0 &&
+		len(report.Transfers) == 0 && len(report.Reserves) == 0 {
+		return nil, fmt.Errorf("there is no data for this user")
+	}
+
+	return report, nil
+}

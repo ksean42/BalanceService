@@ -132,3 +132,13 @@ func (b *BalanceService) Reject(req *entities.ReserveReject) error {
 	}
 	return b.repo.Reject(req)
 }
+func (b *BalanceService) GetUserReport(id int) (*entities.UserReport, error) {
+	if id <= 0 {
+		return nil, fmt.Errorf("id is incorrect")
+	}
+	_, err := b.GetBalance(id)
+	if err != nil {
+		return nil, err
+	}
+	return b.repo.GetUserReport(id)
+}

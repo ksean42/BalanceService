@@ -13,4 +13,5 @@ type Repository interface {
 	GetReport(date time.Time) (*[]entities.Report, error)
 	Transfer(req *entities.TransferRequest) error
 	Reject(req *entities.ReserveReject) error
+	GetUserReport(id int) (*entities.UserReport, error)
 }
