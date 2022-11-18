@@ -340,7 +340,7 @@ Status 200
 		},
 		{
 			"src_id": 1,
-			"dest_id": 1,
+			"dest_id": 3,
 			"amount": 9,
 			"date": "2022-11-18T04:04:35.10698Z"
 		}
