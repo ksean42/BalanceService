@@ -15,7 +15,7 @@ import (
 // @Param input body entities.UserBalanceRequest true "user id for its balance"
 // @Success 200 {object} entities.ResultResponse
 // @Failure 400,404 {object} entities.ErrorResponse
-// @Router /api/get [get]
+// @Router /api/balance [get]
 func (h *Handler) GetBalance(c *gin.Context) {
 	var req entities.UserBalanceRequest
 	err := c.ShouldBindJSON(&req)
@@ -193,8 +193,8 @@ func (h *Handler) Reject(c *gin.Context) {
 // @Tags report
 // @Accept json
 // @Produce json
-// @Param input body entities.ReportRequest true "User id for report"
-// @Success 200 {object} entities.ResultResponse
+// @Param input body entities.UserReportRequest true "User id for report"
+// @Success 200 {object} entities.UserReport
 // @Failure 400,404 {object} entities.ErrorResponse
 // @Router /api/userReport [get]
 func (h *Handler) GetUserReport(c *gin.Context) {
@@ -212,5 +212,5 @@ func (h *Handler) GetUserReport(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, entities.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, entities.ResultResponse{Result: result})
+	c.JSON(http.StatusOK, result)
 }

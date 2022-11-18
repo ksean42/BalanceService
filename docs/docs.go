@@ -106,7 +106,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/get": {
+        "/api/balance": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -350,7 +350,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.ReportRequest"
+                            "$ref": "#/definitions/entities.UserReportRequest"
                         }
                     }
                 ],
@@ -358,7 +358,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ResultResponse"
+                            "$ref": "#/definitions/entities.UserReport"
                         }
                     },
                     "400": {
@@ -457,6 +457,85 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.UserReport": {
+            "type": "object",
+            "properties": {
+                "reserves": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.UserReserving"
+                    }
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.UserTransactionReport"
+                    }
+                },
+                "transfers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.UserTransferReport"
+                    }
+                }
+            }
+        },
+        "entities.UserReportRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.UserReserving": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "service_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.UserTransactionReport": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "service_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.UserTransferReport": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "dest_id": {
+                    "type": "integer"
+                },
+                "src_id": {
                     "type": "integer"
                 }
             }

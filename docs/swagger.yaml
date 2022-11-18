@@ -52,6 +52,57 @@ definitions:
       id:
         type: integer
     type: object
+  entities.UserReport:
+    properties:
+      reserves:
+        items:
+          $ref: '#/definitions/entities.UserReserving'
+        type: array
+      transactions:
+        items:
+          $ref: '#/definitions/entities.UserTransactionReport'
+        type: array
+      transfers:
+        items:
+          $ref: '#/definitions/entities.UserTransferReport'
+        type: array
+    type: object
+  entities.UserReportRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  entities.UserReserving:
+    properties:
+      amount:
+        type: number
+      order_id:
+        type: integer
+      service_id:
+        type: integer
+    type: object
+  entities.UserTransactionReport:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      order_id:
+        type: integer
+      service_id:
+        type: integer
+    type: object
+  entities.UserTransferReport:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      dest_id:
+        type: integer
+      src_id:
+        type: integer
+    type: object
 host: localhost:8071
 info:
   contact: {}
@@ -118,7 +169,7 @@ paths:
       summary: Approve payment transaction
       tags:
       - user balance
-  /api/get:
+  /api/balance:
     get:
       consumes:
       - application/json
@@ -273,14 +324,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/entities.ReportRequest'
+          $ref: '#/definitions/entities.UserReportRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.ResultResponse'
+            $ref: '#/definitions/entities.UserReport'
         "400":
           description: Bad Request
           schema:
